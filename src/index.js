@@ -330,12 +330,13 @@ class Offline {
     const apiKeys = this.service.provider.apiKeys;
     const protectedRoutes = [];
 
-    if (['nodejs', 'nodejs4.3', 'nodejs6.10', 'nodejs8.10', 'babel'].indexOf(serviceRuntime) === -1) {
+    if (['nodejs', 'nodejs4.3', 'nodejs6.10', 'nodejs8.10', 'babel', 'go1.x'].indexOf(serviceRuntime) === -1) {
       this.printBlankLine();
       this.serverlessLog(`Warning: found unsupported runtime '${serviceRuntime}'`);
 
       return;
     }
+
 
     // for simple API Key authentication model
     if (!_.isEmpty(apiKeys)) {
@@ -423,6 +424,17 @@ class Offline {
           // Cf AWS API GW payload limits.
           routeConfig.payload = { parse: false, maxBytes: 1024 * 1024 * 10 };
         }
+
+	// Golang support
+        var childProcess	= require('child_process');
+	var _env		= process.env;
+        var port		= Math.floor( Math.random() * (65536 + 1 - 30000) ) + 30000 ;
+	_env._LAMBDA_SERVER_PORT	= port
+        var p = childProcess.spawn(funOptions.handlerPath, [], { env: _env} );
+	debugLog('handlerPath: ', funOptions.handlerPath);
+
+	p.on('exit', function (code) { console.log('child process exited.'); });
+	p.on('error', function (err) { console.error(err); process.exit(1); });
 
         this.server.route({
           method: routeMethod,
@@ -537,7 +549,17 @@ class Offline {
               }
               Object.assign(process.env, this.originalEnvironment);
               process.env._HANDLER = fun.handler;
-              handler = functionHelper.createHandler(funOptions, this.options);
+
+              // Golang support
+              var   _servicePath = path.join(this.serverless.config.servicePath, this.options.location);
+              const goOptions = {
+                 funName: funOptions.funName,
+                 handlerName: "rpc_handler",
+                 handlerPath: __dirname + `/../lib/golang`,
+                 funTimeout: funOptions.Timeout
+              }
+              //handler = functionHelper.createHandler(funOptions, this.options);
+              handler = functionHelper.createHandler(goOptions, this.options);
             }
             catch (err) {
               return this._reply500(response, `Error while loading ${funName}`, err, requestId);
@@ -812,7 +834,8 @@ class Offline {
             // Finally we call the handler
             debugLog('_____ CALLING HANDLER _____');
             try {
-              const x = handler(event, lambdaContext, lambdaContext.done);
+
+		const x = handler(port, event, lambdaContext, lambdaContext.done);
 
               // Promise support
               if ((serviceRuntime === 'nodejs8.10' || serviceRuntime === 'babel') && !this.requests[requestId].done) {
