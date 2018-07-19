@@ -838,7 +838,7 @@ class Offline {
             debugLog('_____ CALLING HANDLER _____');
             try {
 
-		const x = handler(port, event, lambdaContext, lambdaContext.done);
+		const x = handler(funOptions._port, event, lambdaContext, lambdaContext.done);
 
               // Promise support
               if ((serviceRuntime === 'nodejs8.10' || serviceRuntime === 'babel') && !this.requests[requestId].done) {
