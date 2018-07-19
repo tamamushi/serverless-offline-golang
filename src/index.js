@@ -437,7 +437,7 @@ class Offline {
 	p.on('error', function (err) { console.error(err); process.exit(1); });
 
 	debugLog('handlerPath: ', funOptions.handlerPath);
-	debugLog('pid: ', this.p.pid);
+	debugLog('pid: ', p.pid);
 
         this.server.route({
           method: routeMethod,
