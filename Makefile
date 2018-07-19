@@ -13,7 +13,13 @@ $(TOOLSET_REP):
 	@sudo yum install -y $(TOOLSET_LIST) > /dev/null 2>&1 
 	@echo "Install $(TOOLSET_LIST) from yum"
 
-build: lib/libclient.o
+golang:
+	@if [ ! `which go` ];then \
+		echo "Your system didn't have golang environment"; \
+		exit 1; \
+	fi
+
+build: golang lib/libclient.o
 
 lib/libclient.o: lib/client.go
 	go build -buildmode=c-shared -o lib/libclient.so lib/client.go 

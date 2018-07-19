@@ -427,14 +427,17 @@ class Offline {
 
 	// Golang support
         var childProcess	= require('child_process');
-	var _env		= process.env;
-        var port		= Math.floor( Math.random() * (65536 + 1 - 30000) ) + 30000 ;
-	_env._LAMBDA_SERVER_PORT	= port
-        var p = childProcess.spawn(funOptions.handlerPath, [], { env: _env} );
-	debugLog('handlerPath: ', funOptions.handlerPath);
+	var _e			= process.env;
 
+	funOptions._port	= Math.floor( Math.random() * (65536 + 1 - 30000) ) + 30000 ;
+	_e._LAMBDA_SERVER_PORT	= funOptions.port
+
+        var p = childProcess.spawn(funOptions.handlerPath, [], { env: _e} );
 	p.on('exit', function (code) { console.log('child process exited.'); });
 	p.on('error', function (err) { console.error(err); process.exit(1); });
+
+	debugLog('handlerPath: ', funOptions.handlerPath);
+	funOptions._process	= p
 
         this.server.route({
           method: routeMethod,
@@ -848,6 +851,7 @@ class Offline {
             }
           },
         });
+	funOptions._process.killed();
       });
     });
   }
