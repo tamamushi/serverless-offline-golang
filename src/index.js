@@ -437,7 +437,7 @@ class Offline {
 	p.on('error', function (err) { console.error(err); process.exit(1); });
 
 	debugLog('handlerPath: ', funOptions.handlerPath);
-	funOptions._process	= p
+//	funOptions._process	= p
 
         this.server.route({
           method: routeMethod,
@@ -851,7 +851,6 @@ class Offline {
             }
           },
         });
-	funOptions._process.kill('SIGTERM');
       });
     });
   }
