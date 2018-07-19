@@ -6,8 +6,9 @@
 logs
 *.log
 npm-debug.log*
-lib/*.o
+lib/*.so
 lib/*.h
+package-lock.json
 
 # Runtime data
 pids

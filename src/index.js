@@ -430,10 +430,9 @@ class Offline {
 	var _e			= process.env;
 
 	funOptions._port	= Math.floor( Math.random() * (65536 + 1 - 30000) ) + 30000 ;
-	_e._LAMBDA_SERVER_PORT	= funOptions.port
+	_e._LAMBDA_SERVER_PORT	= funOptions._port
 
         var p = childProcess.spawn(funOptions.handlerPath, [], { env: _e} );
-	p.on('exit', function (code) { console.log('child process exited.'); });
 	p.on('error', function (err) { console.error(err); process.exit(1); });
 
 	debugLog('handlerPath: ', funOptions.handlerPath);
