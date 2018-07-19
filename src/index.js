@@ -851,7 +851,7 @@ class Offline {
             }
           },
         });
-	funOptions._process.killed();
+	funOptions._process.kill('SIGTERM');
       });
     });
   }
