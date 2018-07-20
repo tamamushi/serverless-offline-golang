@@ -433,6 +433,9 @@ class Offline {
 	_e._LAMBDA_SERVER_PORT	= funOptions._port
 
         var p = childProcess.spawn(funOptions.handlerPath, [], { env: _e} );
+	p.stdout.on('data', (data) => {
+		console.log(data.toString());
+	});
 	p.on('error', function (err) { console.error(err); process.exit(1); });
 
 	debugLog('handlerPath: ', funOptions.handlerPath);
@@ -837,6 +840,8 @@ class Offline {
             debugLog('_____ CALLING HANDLER _____');
             try {
 
+		debugLog(event)
+		debugLog(lambdaContext)
 		const x = handler(funOptions._port, event, lambdaContext, lambdaContext.done);
 
               // Promise support
