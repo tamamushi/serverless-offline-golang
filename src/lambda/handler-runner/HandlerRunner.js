@@ -3,6 +3,7 @@ import { logWarning } from '../../serverlessLog.js'
 import {
   supportedNodejs,
   supportedPython,
+  supportedGo,
   supportedRuby,
 } from '../../config/index.js'
 import { satisfiesVersionRange } from '../../utils/index.js'
@@ -47,6 +48,7 @@ export default class HandlerRunner {
 
       if (useWorkerThreads) {
         // worker threads
+
         this._verifyWorkerThreadCompatibility()
 
         const { default: WorkerThreadRunner } = await import(
@@ -70,6 +72,11 @@ export default class HandlerRunner {
     if (supportedPython.has(runtime)) {
       const { default: PythonRunner } = await import('./python-runner/index.js')
       return new PythonRunner(this.#funOptions, this.#env)
+    }
+
+    if (supportedGo.has(runtime)) {
+      const { default: GoRunner } = await import('./go-runner/index.js')
+      return new GoRunner(this.#funOptions, this.#env)
     }
 
     if (supportedRuby.has(runtime)) {
